@@ -66,6 +66,12 @@ def too_new_or_popular?(tweet)
   false
 end
 
+def keybase_proof?(tweet)
+  return true if tweet.text.start_with? "Verifying myself: I am #{ENV["TWITTER_USER"]} on Keybase.io."
+
+  false
+end
+
 def api_call(method, *args)
   @client.send method, *args
 rescue Twitter::Error::TooManyRequests => e
@@ -93,6 +99,7 @@ oldest_tweets_page = (total_tweets / MAX_TWEETS_PER_PAGE).ceil
 
 oldest_tweets_page.downto(1) do |page|
   tweets = api_call :user_timeline, count: MAX_TWEETS_PER_PAGE, page: page
+  tweets.reject!(&method(:keybase_proof?))
   tweets_to_delete += tweets.reject(&method(:too_new_or_popular?))
 end
 
