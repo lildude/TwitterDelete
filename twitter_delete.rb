@@ -67,7 +67,10 @@ def too_new_or_popular?(tweet)
 end
 
 def keybase_proof?(tweet)
-  return true if tweet.text.start_with? "Verifying myself: I am #{ENV["TWITTER_USER"]} on Keybase.io."
+  if tweet.text.start_with? "Verifying myself: I am #{ENV["TWITTER_USER"]} on Keybase.io."
+    puts "Ignoring tweet: Keybase proof: #{tweet.text}"
+    return true
+  end
 
   false
 end
